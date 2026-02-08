@@ -87,6 +87,7 @@ button {
 </div>
 
 <script>
+let currentUser = "";
 function analyze() {
   const name = document.getElementById("name").value;
   const age = document.getElementById("age").value;
@@ -120,9 +121,9 @@ function analyze() {
       image: e.target.result
     };
 
-    const history = JSON.parse(localStorage.getItem("ulcerHistory") || "[]");
+    const history = JSON.parse(sessionStorage.getItem("ulcerHistory") || "[]");
     history.unshift(record);
-    localStorage.setItem("ulcerHistory", JSON.stringify(history));
+    sessionStorage.setItem("ulcerHistory", JSON.stringify(history));
     renderHistory();
   };
   reader.readAsDataURL(imageInput.files[0]);
@@ -144,7 +145,6 @@ function renderHistory() {
   });
 }
 
-renderHistory();
 </script>
 
 </body>
