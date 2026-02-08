@@ -87,64 +87,69 @@ button {
 </div>
 
 <script>
-let currentUser = "";
-function analyze() {
-  const name = document.getElementById("name").value;
-  const age = document.getElementById("age").value;
-  const imageInput = document.getElementById("image");
-  const resultDiv = document.getElementById("result");
+  // 🔥 ล้างประวัติทุกครั้งที่เปิดเว็บ
+  sessionStorage.removeItem("ulcerHistory");
 
-  if (!name || !age || !imageInput.files[0]) {
-    alert("กรอกข้อมูลให้ครบก่อน");
-    return;
-  }
+  function analyze() {
+    const name = document.getElementById("name").value;
+    const age = document.getElementById("age").value;
+    const imageInput = document.getElementById("image");
+    const resultDiv = document.getElementById("result");
 
-  // Mock AI วิเคราะห์
-  const stages = ["ระดับ 1", "ระดับ 2", "ระดับ 3"];
-  const stage = stages[Math.floor(Math.random() * stages.length)];
+    if (!name || !age || !imageInput.files[0]) {
+      alert("กรอกข้อมูลให้ครบก่อน");
+      return;
+    }
 
-  const trend = Math.random() > 0.5 ? "ดีขึ้น ✅" : "แย่ลง ❌";
+    // Mock AI วิเคราะห์
+    const stages = ["ระดับ 1", "ระดับ 2", "ระดับ 3"];
+    const stage = stages[Math.floor(Math.random() * stages.length)];
+    const trend = Math.random() > 0.5 ? "ดีขึ้น ✅" : "แย่ลง ❌";
 
-  resultDiv.innerHTML = `
-    <strong>ผลการวิเคราะห์</strong><br>
-    แผลกดทับ: ${stage}<br>
-    แนวโน้ม: ${trend}
-  `;
+    resultDiv.innerHTML = `
+      <strong>ผลการวิเคราะห์</strong><br>
+      แผลกดทับ: ${stage}<br>
+      แนวโน้ม: ${trend}
+    `;
 
-  // บันทึกข้อมูล
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const record = {
-      date: new Date().toLocaleString(),
-      stage,
-      trend,
-      image: e.target.result
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const record = {
+        date: new Date().toLocaleString(),
+        stage,
+        trend,
+        image: e.target.result
+      };
+
+      const history =
+        JSON.parse(sessionStorage.getItem("ulcerHistory")) || [];
+
+      history.unshift(record);
+      sessionStorage.setItem("ulcerHistory", JSON.stringify(history));
+
+      renderHistory();
     };
 
-    const history = JSON.parse(sessionStorage.getItem("ulcerHistory") || "[]");
-    history.unshift(record);
-    sessionStorage.setItem("ulcerHistory", JSON.stringify(history));
-    renderHistory();
-  };
-  reader.readAsDataURL(imageInput.files[0]);
-}
+    reader.readAsDataURL(imageInput.files[0]);
+  }
 
-function renderHistory() {
-  const historyDiv = document.getElementById("history");
-  const history = JSON.parse(localStorage.getItem("ulcerHistory") || "[]");
+  function renderHistory() {
+    const historyDiv = document.getElementById("history");
+    const history =
+      JSON.parse(sessionStorage.getItem("ulcerHistory")) || [];
 
-  historyDiv.innerHTML = "";
-  history.forEach(item => {
-    historyDiv.innerHTML += `
-      <div class="result">
-        <strong>${item.date}</strong><br>
-        ${item.stage} | ${item.trend}
-        <img src="${item.image}" />
-      </div>
-    `;
-  });
-}
+    historyDiv.innerHTML = "";
 
+    history.forEach(item => {
+      historyDiv.innerHTML += `
+        <div class="result">
+          <strong>${item.date}</strong><br>
+          ${item.stage} | ${item.trend}<br>
+          <img src="${item.image}" />
+        </div>
+      `;
+    });
+  }
 </script>
 
 </body>
